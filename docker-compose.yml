@@ -1,0 +1,50 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      DEBUG: 'true'
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:8000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskynetwork
+    expose:
+      - "8000"
+  
+  db:
+    restart: always
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "taskyuser"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - userdb:/var/lib/postgresql/data
+    command: ["postgres", "-c", "max_connections=300", "-c", "log_statement=all", "-c", "log_duration=on"]
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "taskyuser", "-U", "postgres"]
+    networks:
+      - taskynetwork
+
+networks:
+  taskynetwork:
+    external: true
+
+volumes:
+  userdb:
