@@ -1,8 +1,13 @@
 import pika, json
 
+import os
+from dotenv import load_dotenv
 
+# Load the stored environment variables
+load_dotenv()
+amq_id = os.getenv('AMQ_ID')
 
-params = pika.URLParameters('')
+params = pika.URLParameters(amq_id)
 
 try:
     connection = pika.BlockingConnection(params)
