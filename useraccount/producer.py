@@ -1,11 +1,16 @@
 import pika, json
+import os
+from dotenv import load_dotenv
 
-params = pika.URLParameters('amqps://tamelmkg:bAGQhUGeH658A5vM9E5wFA6wzQNaAkPc@puffin.rmq2.cloudamqp.com/tamelmkg')
+# Load the stored environment variables
+load_dotenv()
+amq_id = os.getenv('AMQ_ID')
+params = pika.URLParameters(amq_id)
 try:
     connection = pika.BlockingConnection(params)
     channel = connection.channel()
     channel.queue_declare(queue='notification', durable=True)
-    channel.queue_declare(queue='api_gateway', durable=True)
+    # channel.queue_declare(queue='api_gateway', durable=True)
     
     
     

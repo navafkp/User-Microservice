@@ -1,3 +1,5 @@
+import json
+from .producer import publish_to_notification
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,8 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 secret_key = os.getenv('SECRET_KEY')
 
-from .producer import publish_to_notification
-import json
+
 class RegisterView(APIView):
     """ 
     Getting user registration request from API gateway and registering the user
@@ -43,19 +44,29 @@ class RegisterView(APIView):
             serializer = CustomUserSerialzer(data=user_details)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            user_details['content'] =f'New account has been created for user, {name}'
-            print(user_details, 'test')
+            response_data = {'name': serializer.data['name'],
+                            'username': serializer.data['username'],
+                            'email': serializer.data['email'],
+                            'role': serializer.data['role'],
+                            'date_joined': serializer.data['date_joined'],
+                           }
+            print(response_data, 'hahahaha')
+            user_details['content'] = f'New account has been created for user, {name}'
+
+            user_details.pop('password')
+
             publish_to_notification('new user registered', user_details)
-            return Response({'message': "Your Account Registered Successfully"})
+
+            return Response({'message': "Your Account Registered Successfully", 'data': response_data})
         except ValidationError as e:
             if 'username' in e.detail:
                 return Response({'error': "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
             elif 'email' in e.detail:
                 return Response({'error': 'Email already exists'}, status=status.HTTP_409_CONFLICT)
             else:
-                return Response({'error':'Registraion Failed, please check the details again'},status=status.HTTP_400_BAD_REQUEST)
-   
-           
+                return Response({'error': 'Registraion Failed, please check the details again'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserDetails(APIView):
     """ 
     Get request from API gateway for getting a specific user , 
@@ -113,7 +124,7 @@ class UserUpdate(APIView):
                     user = CustomUser.objects.filter(
                         id=payload['user_id']).first()
                     if user:
-                        
+
                         user.name = name
 
                         user.username = username
@@ -198,7 +209,7 @@ class BlockUser(APIView):
                 print(e)
                 return Response({"error": "An error occurred during token decoding or serialization"})
         return Response({'message': 'Something went wrong, try again'})
-    
+
 
 class UserAuthentication(APIView):
     def post(self, request):
