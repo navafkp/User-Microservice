@@ -42,6 +42,21 @@ services:
     networks:
       - taskynetwork
 
+  queue:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: 'python consumer.py'  
+    depends_on:
+      - db
+    healthcheck:
+      test: ["CMD", "python", "consumer.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - taskynetwork
+
 networks:
   taskynetwork:
     external: true

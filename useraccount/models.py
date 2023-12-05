@@ -8,11 +8,12 @@ class CustomUser(AbstractUser):  # Creating custom user
     last_name = None
     is_superuser = None
     is_staff = None
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, blank=False, null=False)
     email = models.EmailField('email_address', unique=True)
     role = models.CharField(max_length=100, default='manager')
     profile_image = models.ImageField(upload_to='profile/', blank=True, null=True)
-    workspace = models.CharField(max_length=200)
+    workspace = models.CharField(max_length=200, blank=False, null=False)
+    designation = models.CharField(max_length=200, default=None, null=True, blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     
