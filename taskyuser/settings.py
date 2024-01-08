@@ -32,7 +32,14 @@ SECRET_KEY = 'django-insecure-v$+%lqys$_t_7jwtrga00413tpoyk%$j_t=*e10hb1(&=b$)s_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', 'backend', 'taskygateway-backend-1', '127.0.0.1', '8000', '0.0.0.0']
+
+ALLOWED_HOSTS = [
+    'www.taskyflow.online',
+    'docker-taskyflow-microservice-notificationapp-container-1', 'docker-taskyflow-microservice-apiservice-container-1',
+    'taskyflow.online', 'localhost', 'docker-taskyflow-microservice-userservice-container-1', 'docker-taskyflow-microservice-taskservice-container-1',
+    '13.60.18.4', '8000', '127.0.0.1', 'localhost:8000', 'localhost:8300', '8300', '0.0.0.0:8200', '0.0.0.0:8000',
+    '127.0.0.1:8200', '0.0.0.0',
+]
 
 # Application definition
 
@@ -89,20 +96,20 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': "taskyuser",
         'USER': "postgres",
-        "PASSWORD":"1234",
-        "HOST":"db",
-        "PORT":"5432",
-        
+        "PASSWORD": "1345",
+        "HOST": "docker-taskyflow-microservice-postgres-user-1",
+        "PORT": "5432",
+
     }
 }
 
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        
+
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
-    
+
 }
 
 SIMPLE_JWT = {
@@ -190,11 +197,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
-AUTH_USER_MODEL = 'useraccount.CustomUser'   #when we add custom user model, we need mention auth user model (appname.modelname)
+# when we add custom user model, we need mention auth user model (appname.modelname)
+AUTH_USER_MODEL = 'useraccount.CustomUser'
 
+
+CORS_ALLOWED_ORIGINS = [
+    'https://taskyflow.online', 'https://www.taskyflow.online', "http://localhost:3000",
+    'https://4d9c-103-180-2-229.ngrok-free.app', 'http://localhost:8000', 'http://13.60.18.4',
+]
